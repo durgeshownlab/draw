@@ -1,3 +1,4 @@
+// @ts-ignore
 import Pikaso, { BaseShapes } from "pikaso"
 
 // for creating circle 
