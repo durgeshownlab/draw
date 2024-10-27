@@ -5,7 +5,6 @@ import Header from './components/header/Header'
 import Sidebar from './components/sidebar/Sidebar'
 import usePikaso from "pikaso-react-hook";
 import { createArrow, createCircle, createHexagon, createLine, createPencil, createPentagon, createRectangle, createText, createTriangle } from './features/shapes/shapes';
-import Pikaso, { BaseShapes } from 'pikaso';
 
 
 function App() {
