@@ -4,11 +4,44 @@ import Editor from './components/editor/Editor'
 import Header from './components/header/Header'
 import Sidebar from './components/sidebar/Sidebar'
 import usePikaso from "pikaso-react-hook";
+import { createArrow, createCircle, createHexagon, createLine, createPencil, createPentagon, createRectangle, createText, createTriangle } from './features/shapes/shapes';
+import Pikaso, { BaseShapes } from 'pikaso';
 
 
 function App() {
   
-  const [editorRef, editor] = usePikaso();
+  const [editorRef, editor] = usePikaso({
+    snapToGrid: {
+      strokeWidth: 1,
+      stroke: "purple",
+      dash: [5],
+    },
+    measurement: {
+      margin: 20,
+      background: {
+        cornerRadius: 5,
+        fill: "#ffffff",
+        stroke: "purple",
+        strokeWidth: 1
+        
+      },
+      text: {
+        fill: "purple",
+        padding: 5,
+        fontSize: 12,
+        fontStyle: 'bold'
+      }
+    },
+    selection: {
+      transformer: {
+        anchorFill: 'purple',
+        borderStroke: 'purple',
+        borderStrokeWidth: 2,
+        anchorCornerRadius: 10
+      }
+    }
+  });
+
   const [shapeBg, setShapeBg] = useState("#000000");
   const [strokeWidth, setStrokeWidth] = useState<number>(1);
   const [strokeColor, setStrokeColor] = useState("#ffffff");
@@ -23,66 +56,8 @@ function App() {
   const selectImagePopupRef = useRef<HTMLDivElement | null>(null);
   const selectImageRef = useRef<HTMLInputElement | null>(null);
   const openFileRef = useRef<HTMLInputElement | null>(null);
+  const [currentShape, setCurrentShape] = useState<string>("")
 
-  // for creating circle 
-  const createCircle = ()=>{
-    if(editor) {
-      editor.shapes.circle.draw({
-        fill: shapeBg,
-        stroke: strokeColor,
-        strokeWidth: strokeWidth,
-      })
-    }
-  }
-
-  // for creating reactangle 
-  const createRectangle = ()=>{
-    if(editor) {
-      editor.shapes.rect.draw({
-        fill: shapeBg,
-        stroke: strokeColor,
-        strokeWidth: strokeWidth
-      })
-    }
-  }
-
-  // for creating line 
-  const createLine = ()=>{
-    if(editor) {
-      editor.shapes.line.draw({
-        stroke: strokeColor,
-        strokeWidth: strokeWidth
-      })
-      
-    }
-  }
-
-  // for writing text
-  const createText = ()=>{
-    if(editor) {
-      editor.shapes.label.insert({
-        container: {
-          x: 20,
-          y: 20
-        },
-        text: {
-          text: "Write Text",
-          fill: shapeBg,
-          fontSize: 40
-        }
-      })
-    }
-  }
-
-  // for creating drawing with pencil
-  const createPencil = ()=>{
-    if(editor) {
-      editor.shapes.pencil.draw({
-        stroke: strokeColor,
-        strokeWidth: strokeWidth
-      })
-    }
-  }
 
   const insertImage = ()=> {
     if (editor && imageURL && imageURL.trim()!=="") {
@@ -228,6 +203,28 @@ function App() {
     }
   }, [strokeColor, strokeWidth])
 
+  const drawGrid = (editor: Pikaso<BaseShapes>, gridSize: number, color: string, lineWidth: number) => {
+    const canvasWidth = editor.board.getDimensions().width;
+    const canvasHeight = editor.board.getDimensions().height;
+  
+    // Draw vertical lines
+    for (let x = 0; x <= canvasWidth; x += gridSize) {
+      editor.shapes.line.draw({
+        points: [x, 0, x, canvasHeight],
+        stroke: color,
+        strokeWidth: lineWidth,
+      });
+    }
+  
+    // Draw horizontal lines
+    for (let y = 0; y <= canvasHeight; y += gridSize) {
+      editor.shapes.line.draw({
+        points: [0, y, canvasWidth, y],
+        stroke: color,
+        strokeWidth: lineWidth,
+      });
+    }
+  };
 
   const handleClickOutside = (event: MouseEvent) => {
     if (strokePopupRef.current && !strokePopupRef.current.contains(event.target as Node)) {
@@ -250,6 +247,66 @@ function App() {
       importJSON()
     }
   }, [openFile])
+
+  const drawShape = ()=> {
+    if(editor) {
+      switch(currentShape) {
+        case 'circle': {
+          createCircle(editor, shapeBg, strokeColor, strokeWidth)
+          break;
+        }
+        case 'rectangle': {
+          createRectangle(editor, shapeBg, strokeColor, strokeWidth)
+          break;
+        }
+        case 'line': {
+          createLine(editor, strokeColor, strokeWidth)
+          break;
+        }
+        case 'text': {
+          createText(editor, shapeBg)
+          break;
+        }
+        case 'pencil': {
+          createPencil(editor, strokeColor, strokeWidth)
+          break;
+        }
+        case 'triangle': {
+          createTriangle(editor, shapeBg, strokeColor, strokeWidth)
+          break;
+        }
+        case 'arrow': {
+          createArrow(editor, shapeBg, strokeColor, strokeWidth)
+          break;
+        }
+        case 'pentagon': {
+          createPentagon(editor, shapeBg, strokeColor, strokeWidth)
+          break;
+        }
+        case 'hexagon': {
+          createHexagon(editor, shapeBg, strokeColor, strokeWidth)
+          break;
+        }
+      }
+      
+    }
+  }
+
+  useEffect(()=>{
+    drawShape()
+  }, [currentShape])
+
+  const handleMouseLeave = (event: MouseEvent)=>{
+    if(editorRef.current && editorRef.current.contains(event.target as Node)) {
+      setCurrentShape("")
+    }
+  }
+
+  useEffect(()=>{
+    document.addEventListener("mouseup", handleMouseLeave)
+
+    return ()=>document.removeEventListener("mouseup", handleMouseLeave)
+  }, [])
   
   return (
     <>
@@ -289,11 +346,8 @@ function App() {
         <div className="w-full h-full flex-initial flex">
           <div className="w-14 h-full bg-purple-100">
             <Sidebar 
-              createCircle={createCircle} 
-              createRectangle={createRectangle} 
-              createLine={createLine}
-              createText={createText}
-              createPencil={createPencil} />
+              currentShape={currentShape}
+              setCurrentShape={setCurrentShape} />
           </div>
 
           <div className="w-full h-full bg-white flex items-center">

@@ -6,7 +6,7 @@ interface Editor {
 const Editor: React.FC<Editor> = ({editorRef}) => {
    
   return (
-    <div className="w-10/12 h-5/6 mx-auto my-auto bg-green-500" ref={editorRef}>
+    <div className="w-full h-full mx-auto my-auto bg-gray-200 " ref={editorRef}>
     </div>
   )
 }
