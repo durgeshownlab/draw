@@ -203,28 +203,28 @@ function App() {
     }
   }, [strokeColor, strokeWidth])
 
-  const drawGrid = (editor: Pikaso<BaseShapes>, gridSize: number, color: string, lineWidth: number) => {
-    const canvasWidth = editor.board.getDimensions().width;
-    const canvasHeight = editor.board.getDimensions().height;
+  // const drawGrid = (editor: Pikaso<BaseShapes>, gridSize: number, color: string, lineWidth: number) => {
+  //   const canvasWidth = editor.board.getDimensions().width;
+  //   const canvasHeight = editor.board.getDimensions().height;
   
-    // Draw vertical lines
-    for (let x = 0; x <= canvasWidth; x += gridSize) {
-      editor.shapes.line.draw({
-        points: [x, 0, x, canvasHeight],
-        stroke: color,
-        strokeWidth: lineWidth,
-      });
-    }
+  //   // Draw vertical lines
+  //   for (let x = 0; x <= canvasWidth; x += gridSize) {
+  //     editor.shapes.line.draw({
+  //       points: [x, 0, x, canvasHeight],
+  //       stroke: color,
+  //       strokeWidth: lineWidth,
+  //     });
+  //   }
   
-    // Draw horizontal lines
-    for (let y = 0; y <= canvasHeight; y += gridSize) {
-      editor.shapes.line.draw({
-        points: [0, y, canvasWidth, y],
-        stroke: color,
-        strokeWidth: lineWidth,
-      });
-    }
-  };
+  //   // Draw horizontal lines
+  //   for (let y = 0; y <= canvasHeight; y += gridSize) {
+  //     editor.shapes.line.draw({
+  //       points: [0, y, canvasWidth, y],
+  //       stroke: color,
+  //       strokeWidth: lineWidth,
+  //     });
+  //   }
+  // };
 
   const handleClickOutside = (event: MouseEvent) => {
     if (strokePopupRef.current && !strokePopupRef.current.contains(event.target as Node)) {
